@@ -421,33 +421,19 @@ const fmtTime = m => pad(Math.floor(m/60))+':'+pad(m%60);
 
 /* ---- 初回サンプルデータ（画像の見た目に合わせる。マイページで消せます） ---- */
 function seed(){
-  settings = {dailyGoal:300, weeklyGoal:1500, theme:'#f2807a'};
-  const t = today(); const d=new Date();
-  logs = [
-    {id:id(), date:t, subject:'英語', minutes:90},
-    {id:id(), date:t, subject:'数学', minutes:60},
-    {id:id(), date:t, subject:'国語', minutes:45},
-    {id:id(), date:t, subject:'理科', minutes:30},
-  ];
-  // 過去6日分（今週の学習時間・グラフ用）
-  const past=[120,180,150,240,210,255];
-  for(let i=1;i<=6;i++){ const p=new Date(); p.setDate(d.getDate()-i);
-    logs.push({id:id(), date:ymd(p), subject:'英語', minutes:past[6-i]});
-  }
-  todos = [
-    {id:id(), text:'単語帳を10ページ進める', subject:'英語', deadline:t, done:false, pri:'高'},
-    {id:id(), text:'問題集 p.45-60', subject:'数学', deadline:t, done:false, pri:'高'},
-    {id:id(), text:'現代文の要点まとめ', subject:'国語', deadline:t, done:false, pri:'中'},
-    {id:id(), text:'化学 基礎問題演習', subject:'理科', deadline:t, done:false, pri:'中'},
-    {id:id(), text:'リスニングを1セット解く', subject:'英語', deadline:t, done:true, pri:'低'},
-  ];
-  streak = {last:t, count:12, best:12};
-  note = '';
+  settings = settings || {dailyGoal:300, weeklyGoal:1500, theme:'#f2807a'};
+  logs = []; todos = []; streak = {last:'', count:0, best:0}; note = '';
   saveAll();
 }
 function id(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
 function saveAll(){ save(K.set,settings); save(K.log,logs); save(K.todo,todos); save(K.streak,streak); save(K.note,note); }
 
+// --- 一度だけ、古いサンプルデータを消して空の状態から始める ---
+if(!localStorage.getItem('lm_cleared')){
+  Object.values(K).forEach(k=>localStorage.removeItem(k));
+  localStorage.setItem('lm_cleared','1');
+  settings=null; logs=null; todos=null; streak=null; note='';
+}
 if(!settings || !logs || !todos || !streak){ seed(); }
 
 /* ===================== 画面切り替え ===================== */
